@@ -10,6 +10,8 @@ import com.bloki.adblocker.data.AppDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class BlokiApp : Application() {
@@ -20,6 +22,9 @@ class BlokiApp : Application() {
         private set
     lateinit var blocklistManager: BlocklistManager
         private set
+
+    private val _blocklistReady = MutableStateFlow(false)
+    val blocklistReady = _blocklistReady.asStateFlow()
 
     override fun onCreate() {
         super.onCreate()
@@ -32,6 +37,7 @@ class BlokiApp : Application() {
         // Initialize blocklists at startup (downloads on first run)
         CoroutineScope(SupervisorJob() + Dispatchers.IO).launch {
             blocklistManager.initialize()
+            _blocklistReady.value = true
         }
     }
 

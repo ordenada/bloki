@@ -5,6 +5,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -33,10 +34,7 @@ fun MainScreen(onToggleVpn: (Boolean) -> Unit) {
     val totalToday by app.database.statsDao().totalCountSince(startOfDay)
         .collectAsState(initial = 0)
 
-    // Initialize blocklists on first composition
-    LaunchedEffect(Unit) {
-        app.blocklistManager.initialize()
-    }
+    val blocklistReady by app.blocklistReady.collectAsState()
 
     Column(
         modifier = Modifier
@@ -55,27 +53,35 @@ fun MainScreen(onToggleVpn: (Boolean) -> Unit) {
         )
 
         Text(
-            text = if (vpnEnabled) "Protection Active" else "Protection Disabled",
+            text = when {
+                !blocklistReady -> "Loading blocklists\u2026"
+                vpnEnabled -> "Protection Active"
+                else -> "Protection Disabled"
+            },
             style = MaterialTheme.typography.titleMedium,
-            color = if (vpnEnabled)
-                MaterialTheme.colorScheme.secondary
-            else
-                MaterialTheme.colorScheme.error
+            color = when {
+                !blocklistReady -> MaterialTheme.colorScheme.onSurfaceVariant
+                vpnEnabled -> MaterialTheme.colorScheme.secondary
+                else -> MaterialTheme.colorScheme.error
+            }
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Switch(
-            checked = vpnEnabled,
-            onCheckedChange = { enabled ->
-                vpnEnabled = enabled
-                onToggleVpn(enabled)
-                if (enabled) {
-                    scope.launch { app.blocklistManager.initialize() }
-                }
-            },
-            modifier = Modifier.padding(8.dp)
-        )
+        if (!blocklistReady) {
+            CircularProgressIndicator(modifier = Modifier.padding(8.dp))
+        } else {
+            Switch(
+                checked = vpnEnabled,
+                onCheckedChange = { enabled ->
+                    vpnEnabled = enabled
+                    onToggleVpn(enabled)
+                },
+                modifier = Modifier
+                    .padding(8.dp)
+                    .scale(3f)
+            )
+        }
 
         Spacer(modifier = Modifier.height(24.dp))
 
