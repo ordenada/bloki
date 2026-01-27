@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Bloki</string>
+    <string name="vpn_notification_title">Bloki Ad Blocker Active</string>
+    <string name="vpn_notification_text">Blocking ads via DNS filtering</string>
+    <string name="channel_vpn">VPN Service</string>
+</resources>
