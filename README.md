@@ -4,6 +4,14 @@ On-device DNS-based ad blocker for Android. Bloki intercepts DNS queries via a l
 
 No root required. No data leaves your device except DNS lookups to Cloudflare (1.1.1.1).
 
+## Download
+
+Get the latest APK from the [Releases page](https://github.com/ordenada/bloki/releases/latest).
+
+1. Download `bloki-vX.X.X.apk`
+2. Enable "Install from unknown sources" if prompted
+3. Open the app and tap the toggle
+
 ## How it works
 
 ```
@@ -35,7 +43,7 @@ Requirements:
 - Android SDK with API 36
 
 ```bash
-git clone https://github.com/YOUR_USER/bloki.git
+git clone https://github.com/ordenada/bloki.git
 cd bloki
 ./gradlew assembleDebug
 # APK at app/build/outputs/apk/debug/app-debug.apk
